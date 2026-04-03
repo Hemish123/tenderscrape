@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Government Tender Aggregator — Browse and search tenders from multiple Indian state e-procurement portals.">
+    <title>Tender — Government Tender Aggregator</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #6366f1;
+            --accent: #0891b2;
+            --surface: #f8fafc;
+            --surface-2: #ffffff;
+            --surface-3: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --gradient-1: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0891b2 100%);
+            --gradient-2: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--surface);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ---- NAVBAR ---- */
+        .navbar-custom {
+            background: var(--gradient-2);
+            border-bottom: none;
+            padding: 0.8rem 0;
+            box-shadow: 0 2px 12px rgba(79, 70, 229, 0.15);
+        }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+        .navbar-brand:hover {
+            color: #ffffff;
+        }
+        .navbar-brand i {
+            color: #fbbf24;
+            margin-right: 8px;
+        }
+        .nav-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+
+        /* ---- STATS BAR ---- */
+        .stats-bar {
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.5rem 1rem;
+        }
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .stat-icon.purple { background: #eef2ff; color: #4f46e5; }
+        .stat-icon.cyan { background: #ecfeff; color: #0891b2; }
+        .stat-icon.green { background: #ecfdf5; color: #059669; }
+        .stat-icon.amber { background: #fffbeb; color: #d97706; }
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        /* ---- MAIN ---- */
+        .main-content {
+            padding: 1.5rem 0 3rem;
+        }
+
+        /* ---- FILTER PANEL ---- */
+        .filter-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .filter-panel .section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-panel .section-title i {
+            color: var(--primary);
+        }
+        .form-select, .form-control {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .form-select:focus, .form-control:focus {
+            background: #ffffff;
+            border-color: var(--primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .form-select option {
+            background: #ffffff;
+            color: var(--text-primary);
+        }
+        .btn-filter {
+            background: var(--gradient-1);
+            border: none;
+            color: #fff;
+            border-radius: 10px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+        }
+        .btn-filter:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+            color: #fff;
+        }
+        .btn-reset {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 10px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .btn-reset:hover {
+            background: #e2e8f0;
+            color: var(--text-primary);
+            border-color: #cbd5e1;
+        }
+
+        /* ---- TABLE ---- */
+        .table-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .table-header h5 {
+            font-weight: 700;
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        .result-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .result-count span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .table {
+            margin: 0;
+            color: var(--text-primary);
+        }
+        .table thead th {
+            background: var(--surface-3);
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .table tbody td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+            vertical-align: middle;
+            color: var(--text-primary);
+        }
+        .table tbody tr {
+            transition: background 0.15s ease;
+        }
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .tender-title {
+            color: var(--text-primary);
+            font-weight: 500;
+            max-width: 320px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+        .tender-title a {
+            color: #1e293b;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .tender-title a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        /* Badges */
+        .badge-category {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-it { background: #eef2ff; color: #4338ca; }
+        .badge-infra { background: #fffbeb; color: #b45309; }
+        .badge-construction { background: #fef2f2; color: #b91c1c; }
+        .badge-healthcare { background: #ecfdf5; color: #047857; }
+        .badge-education { background: #ecfeff; color: #0e7490; }
+        .badge-energy { background: #fff7ed; color: #c2410c; }
+        .badge-water { background: #f0f9ff; color: #0369a1; }
+        .badge-transport { background: #faf5ff; color: #7e22ce; }
+        .badge-supply { background: #fdf2f8; color: #be185d; }
+        .badge-consulting { background: #ecfeff; color: #0891b2; }
+        .badge-agriculture { background: #f0fdf4; color: #15803d; }
+        .badge-general { background: #f1f5f9; color: #475569; }
+
+        .badge-source {
+            display: inline-block;
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: #eef2ff;
+            color: #4338ca;
+            border: 1px solid #c7d2fe;
+        }
+        .closing-date {
+            white-space: nowrap;
+            font-size: 0.82rem;
+        }
+        .date-expired {
+            color: var(--danger);
+        }
+        .date-active {
+            color: var(--success);
+        }
+
+        /* ---- PAGINATION ---- */
+        .pagination-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .pagination-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .pagination-info span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .pagination-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .btn-page {
+            min-width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0 10px;
+        }
+        .btn-page:hover:not(.active):not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #eef2ff;
+        }
+        .btn-page.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+        .btn-page:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ---- LOADING OVERLAY ---- */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .spinner-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem 3rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .spinner-box .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3rem;
+            color: var(--primary);
+        }
+        .spinner-box p {
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        /* ---- EMPTY STATE ---- */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .empty-state h5 {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 768px) {
+            .filter-panel .row > div {
+                margin-bottom: 0.75rem;
+            }
+            .stat-card {
+                padding: 0.5rem 0.5rem;
+            }
+            .stat-value {
+                font-size: 1.1rem;
+            }
+            .table-responsive {
+                font-size: 0.82rem;
+            }
+            .pagination-wrapper {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .tender-title {
+                max-width: 200px;
+            }
+        }
+
+        /* ---- SUMMARY MODAL ---- */
+        .summary-btn {
+            background: var(--gradient-2);
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .summary-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);
+        }
+        .summary-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            background: var(--gradient-2);
+            color: #fff;
+            border-radius: 16px 16px 0 0;
+            padding: 1.2rem 1.5rem;
+        }
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .summary-field {
+            margin-bottom: 1rem;
+            padding: 0.8rem 1rem;
+            background: var(--surface-3);
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        .summary-field-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+        .summary-field-value {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        .summary-loading {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .summary-loading .spinner-border {
+            width: 2.5rem;
+            height: 2.5rem;
+            color: var(--primary);
+        }
+        .summary-loading p {
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+        .summary-error {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--danger);
+        }
+        .summary-error i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .summary-status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge-cached {
+            background: #ecfdf5;
+            color: #059669;
+        }
+        .badge-generated {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        /* ---- ANIMATIONS ---- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .skeleton {
+            animation: pulse 1.5s ease-in-out infinite;
+            background: var(--surface-3);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner-box">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading tenders...</p>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div>
+                <a class="navbar-brand" href="/">
+                    <i class="bi bi-lightning-charge-fill"></i>Tender
+                </a>
+                <div class="nav-subtitle">Government Tender Aggregator — India</div>
+            </div>
+            <div class="d-none d-md-flex gap-3 align-items-center">
+                <a href="/admin/" class="btn btn-sm btn-outline-secondary" style="border-color: var(--border); color: var(--text-secondary); border-radius: 8px;">
+                    <i class="bi bi-gear me-1"></i> Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+        <div class="container">
+            <div class="row g-0">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="bi bi-file-earmark-text"></i></div>
+                        <div>
+                            <div class="stat-value" id="statTotal">—</div>
+                            <div class="stat-label">Total Tenders</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon cyan"><i class="bi bi-geo-alt"></i></div>
+                        <div>
+                            <div class="stat-value" id="statStates">—</div>
+                            <div class="stat-label">States</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="bi bi-tags"></i></div>
+                        <div>
+                            <div class="stat-value" id="statCategories">—</div>
+                            <div class="stat-label">Categories</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon amber"><i class="bi bi-clock-history"></i></div>
+                        <div>
+                            <div class="stat-value" id="statActive">—</div>
+                            <div class="stat-label">Active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="container">
+
+            <!-- FILTER PANEL -->
+            <div class="filter-panel fade-in">
+                <div class="section-title">
+                    <i class="bi bi-funnel"></i> Filter Tenders
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <select id="filterCategory" class="form-select">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="filterLocation" class="form-select">
+                            <option value="">All Locations</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select id="filterSource" class="form-select">
+                            <option value="">All States</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="position-relative">
+                            <input type="text" id="filterSearch" class="form-control" placeholder="Search tenders...">
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex gap-2">
+                        <button onclick="applyFilters()" class="btn btn-filter flex-grow-1">
+                            <i class="bi bi-search me-1"></i> Search
+                        </button>
+                        <button onclick="resetFilters()" class="btn btn-reset" title="Reset Filters">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-wrapper fade-in">
+                <div class="table-header">
+                    <h5><i class="bi bi-table me-2" style="color: var(--primary-light);"></i>Tender Listings</h5>
+                    <div class="result-count" id="resultCount"></div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 28%;">Title</th>
+                                <th>Department</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Closing Date</th>
+                                <th>Source</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tenderTable">
+                            <!-- Data populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINATION -->
+                <div class="pagination-wrapper" id="paginationWrapper">
+                    <div class="pagination-info" id="paginationInfo"></div>
+                    <div class="pagination-buttons" id="paginationButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUMMARY MODAL -->
+    <div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="summaryModalLabel">
+                            <i class="bi bi-file-earmark-richtext me-2"></i>AI Tender Summary
+                        </h5>
+                        <div id="summaryTenderTitle" style="font-size: 0.85rem; opacity: 0.8; margin-top: 0.3rem;"></div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="summaryModalBody">
+                    <!-- Content populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---- State ----
+        let currentPage = 1;
+        let totalCount = 0;
+        const PAGE_SIZE = 20;
+
+        // ---- Category badge mapping ----
+        const categoryBadgeMap = {
+            'IT & Technology': 'badge-it',
+            'Infrastructure': 'badge-infra',
+            'Construction': 'badge-construction',
+            'Healthcare': 'badge-healthcare',
+            'Education': 'badge-education',
+            'Energy & Power': 'badge-energy',
+            'Water & Sanitation': 'badge-water',
+            'Transportation': 'badge-transport',
+            'Supply & Procurement': 'badge-supply',
+            'Consulting': 'badge-consulting',
+            'Agriculture': 'badge-agriculture',
+            'General': 'badge-general',
+        };
+
+        // ---- Initialize ----
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFilters();
+            loadStats();
+            loadTenders(1);
+
+            // Enter key in search box
+            document.getElementById('filterSearch').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') applyFilters();
+            });
+        });
+
+        // ---- Load Filter Options ----
+        async function loadFilters() {
+            try {
+                const res = await fetch('/api/tenders/filters/');
+                const data = await res.json();
+
+                populateDropdown('filterCategory', data.categories);
+                populateDropdown('filterLocation', data.locations);
+                populateDropdown('filterSource', data.sources);
+            } catch (err) {
+                console.error('Failed to load filters:', err);
+            }
+        }
+
+        // ---- Load Stats from DB ----
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/tenders/stats/');
+                const data = await res.json();
+
+                document.getElementById('statTotal').textContent = data.total.toLocaleString();
+                document.getElementById('statActive').textContent = data.active.toLocaleString();
+                document.getElementById('statStates').textContent = data.states;
+                document.getElementById('statCategories').textContent = data.categories;
+            } catch (err) {
+                console.error('Failed to load stats:', err);
+            }
+        }
+
+        function populateDropdown(selectId, items) {
+            const select = document.getElementById(selectId);
+            const firstOption = select.options[0].outerHTML;
+            select.innerHTML = firstOption;
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.textContent = item;
+                select.appendChild(opt);
+            });
+        }
+
+        // ---- Load Tenders ----
+        async function loadTenders(page = 1) {
+            currentPage = page;
+            showLoading(true);
+
+            const category = document.getElementById('filterCategory').value;
+            const location = document.getElementById('filterLocation').value;
+            const source = document.getElementById('filterSource').value;
+            const search = document.getElementById('filterSearch').value;
+
+            let url = `/api/tenders/?page=${page}`;
+            if (category) url += `&category=${encodeURIComponent(category)}`;
+            if (location) url += `&location=${encodeURIComponent(location)}`;
+            if (source) url += `&source=${encodeURIComponent(source)}`;
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                totalCount = data.count;
+                renderTable(data.results);
+                renderPagination(data);
+                updateStats(data);
+            } catch (err) {
+                console.error('Failed to load tenders:', err);
+                document.getElementById('tenderTable').innerHTML = `
+                    <tr><td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <h5>Failed to load data</h5>
+                            <p>Please check your connection and try again.</p>
+                        </div>
+                    </td></tr>
+                `;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ---- Render Table ----
+        function renderTable(tenders) {
+            const tbody = document.getElementById('tenderTable');
+
+            if (!tenders || tenders.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <h5>No tenders found</h5>
+                            <p>Try adjusting your filters or search query.</p>
+                        </div>
+                    </td></tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = tenders.map(t => {
+                const badgeClass = categoryBadgeMap[t.category] || 'badge-general';
+                const closingDate = formatDate(t.closing_date);
+                const dateClass = isExpired(t.closing_date) ? 'date-expired' : 'date-active';
+
+                return `
+                    <tr class="fade-in">
+                        <td>
+                            <div class="tender-title">
+                                <a href="${t.link}" target="_blank" rel="noopener" title="${escapeHtml(t.title)}">
+                                    ${escapeHtml(truncate(t.title, 100))}
+                                </a>
+                            </div>
+                        </td>
+                        <td>${escapeHtml(t.department || '—')}</td>
+                        <td><span class="badge-category ${badgeClass}">${escapeHtml(t.category || 'General')}</span></td>
+                        <td>${escapeHtml(t.location || '—')}</td>
+                        <td><span class="closing-date ${dateClass}">${closingDate}</span></td>
+                        <td><span class="badge-source">${escapeHtml(t.source)}</span></td>
+                        <td>
+                            <button class="summary-btn" onclick="viewSummary(${t.id}, this)" title="View AI Summary">
+                                <i class="bi bi-stars me-1"></i>Summary
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ---- Render Pagination ----
+        function renderPagination(data) {
+            const totalPages = Math.ceil(data.count / PAGE_SIZE);
+            const info = document.getElementById('paginationInfo');
+            const buttons = document.getElementById('paginationButtons');
+
+            // Show result info
+            const start = (currentPage - 1) * PAGE_SIZE + 1;
+            const end = Math.min(currentPage * PAGE_SIZE, data.count);
+            info.innerHTML = data.count > 0
+                ? `Showing <span>${start}–${end}</span> of <span>${data.count}</span> tenders`
+                : 'No results';
+
+            // Build pagination buttons
+            let html = '';
+
+            // Previous button
+            html += `<button class="btn-page" onclick="loadTenders(${currentPage - 1})" ${!data.previous ? 'disabled' : ''}>
+                <i class="bi bi-chevron-left"></i>
+            </button>`;
+
+            // Page numbers
+            const pages = getPageNumbers(currentPage, totalPages);
+            pages.forEach(p => {
+                if (p === '...') {
+                    html += `<span class="btn-page" style="cursor: default; border: none;">…</span>`;
+                } else {
+                    html += `<button class="btn-page ${p === currentPage ? 'active' : ''}" onclick="loadTenders(${p})">${p}</button>`;
+                }
+            });
+
+            // Next button
+            html += `<button class="btn-page" onclick="loadTenders(${currentPage + 1})" ${!data.next ? 'disabled' : ''}>
+                <i class="bi bi-chevron-right"></i>
+            </button>`;
+
+            buttons.innerHTML = html;
+
+            // Update result count above table
+            document.getElementById('resultCount').innerHTML = `<span>${data.count}</span> tender${data.count !== 1 ? 's' : ''} found`;
+        }
+
+        function getPageNumbers(current, total) {
+            if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
+
+            const pages = [];
+            if (current <= 4) {
+                for (let i = 1; i <= 5; i++) pages.push(i);
+                pages.push('...', total);
+            } else if (current >= total - 3) {
+                pages.push(1, '...');
+                for (let i = total - 4; i <= total; i++) pages.push(i);
+            } else {
+                pages.push(1, '...', current - 1, current, current + 1, '...', total);
+            }
+            return pages;
+        }
+
+        // ---- Update Stats (called after data loads) ----
+        function updateStats(data) {
+            // Stats are loaded separately from /api/tenders/stats/
+            // This is kept for updating the result count display
+            document.getElementById('resultCount').innerHTML = `<span>${data.count}</span> tender${data.count !== 1 ? 's' : ''} found`;
+        }
+
+        // ---- Filters ----
+        function applyFilters() {
+            loadTenders(1);
+        }
+
+        function resetFilters() {
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterLocation').value = '';
+            document.getElementById('filterSource').value = '';
+            document.getElementById('filterSearch').value = '';
+            loadTenders(1);
+        }
+
+        // ---- Helpers ----
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (show) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            try {
+                const date = new Date(dateStr + 'T00:00:00');
+                return date.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            } catch {
+                return dateStr;
+            }
+        }
+
+        function isExpired(dateStr) {
+            if (!dateStr) return false;
+            return new Date(dateStr) < new Date();
+        }
+
+        function truncate(text, maxLen) {
+            if (!text) return '';
+            return text.length > maxLen ? text.substring(0, maxLen) + '…' : text;
+        }
+
+        // ---- AI Summary ----
+        async function viewSummary(tenderId, btnEl) {
+            // Disable button and show spinner
+            const origHtml = btnEl.innerHTML;
+            btnEl.disabled = true;
+            btnEl.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+
+            const modalBody = document.getElementById('summaryModalBody');
+            const modalTitle = document.getElementById('summaryTenderTitle');
+
+            // Show loading state in modal
+            modalBody.innerHTML = `
+                <div class="summary-loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Downloading PDF and generating AI summary...<br>
+                    <small class="text-muted">This may take 15-30 seconds for first-time analysis</small></p>
+                </div>
+            `;
+            modalTitle.textContent = '';
+
+            // Show modal immediately
+            const modal = new bootstrap.Modal(document.getElementById('summaryModal'));
+            modal.show();
+
+            try {
+                const res = await fetch(`/api/tender/${tenderId}/summary/`);
+                const result = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(result.error || 'Failed to generate summary');
+                }
+
+                const data = result.data;
+                let statusBadge;
+                if (result.status === 'cached') {
+                    statusBadge = '<span class="summary-status-badge badge-cached"><i class="bi bi-check-circle me-1"></i>Cached</span>';
+                } else if (result.status === 'generated_from_metadata') {
+                    statusBadge = '<span class="summary-status-badge badge-generated"><i class="bi bi-info-circle me-1"></i>From Metadata</span>';
+                } else {
+                    statusBadge = '<span class="summary-status-badge badge-generated"><i class="bi bi-stars me-1"></i>Just Generated</span>';
+                }
+
+                modalTitle.innerHTML = `${escapeHtml(data.tender_title || '')} ${statusBadge}`;
+
+                // Render summary fields
+                const summary = data.summary_json;
+                if (summary && typeof summary === 'object') {
+                    let fieldsHtml = '';
+                    for (const [key, value] of Object.entries(summary)) {
+                        if (value === null || value === 'null' || value === '') continue;
+                        const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                        // Handle nested objects/arrays gracefully
+                        let displayValue;
+                        if (typeof value === 'object' && value !== null) {
+                            if (Array.isArray(value)) {
+                                displayValue = value.map(v => typeof v === 'object' ? JSON.stringify(v) : String(v)).join(', ');
+                            } else {
+                                displayValue = Object.entries(value)
+                                    .filter(([, v]) => v !== null && v !== '')
+                                    .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
+                                    .join(' | ');
+                            }
+                        } else {
+                            displayValue = String(value);
+                        }
+                        fieldsHtml += `
+                            <div class="summary-field fade-in">
+                                <div class="summary-field-label">${escapeHtml(label)}</div>
+                                <div class="summary-field-value">${escapeHtml(displayValue)}</div>
+                            </div>
+                        `;
+                    }
+                    if (!fieldsHtml) {
+                        fieldsHtml = '<p class="text-muted text-center">No summary data available.</p>';
+                    }
+                    modalBody.innerHTML = fieldsHtml;
+                } else {
+                    modalBody.innerHTML = '<p class="text-muted text-center">No summary data available.</p>';
+                }
+
+            } catch (err) {
+                console.error('Summary error:', err);
+                modalBody.innerHTML = `
+                    <div class="summary-error">
+                        <i class="bi bi-exclamation-triangle d-block"></i>
+                        <h6>Summary Generation Failed</h6>
+                        <p class="mb-0">${escapeHtml(err.message)}</p>
+                    </div>
+                `;
+            } finally {
+                // Restore button
+                btnEl.disabled = false;
+                btnEl.innerHTML = origHtml;
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
