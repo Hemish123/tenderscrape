@@ -17,8 +17,16 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+DEBUG = False
+ALLOWED_HOSTS = [
+    "tenderscrap-hcfvefa5h0dcgnh2.canadacentral-01.azurewebsites.net",
+    "localhost",
+    "127.0.0.1"
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://tenderscrap-hcfvefa5h0dcgnh2.canadacentral-01.azurewebsites.net"
+]
 
 
 # ---------------------------------------------------------------------------
