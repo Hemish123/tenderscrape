@@ -4,18 +4,26 @@ from django.db import models
 
 
 class Tender(models.Model):
-    """
-    Represents a government tender scraped from state e-procurement portals.
-    Each tender is uniquely identified by its tender_id to prevent duplicates.
-    """
     tender_id = models.CharField(max_length=200, unique=True, db_index=True)
+
+    # ✅ already correct
     title = models.TextField()
-    department = models.CharField(max_length=500, null=True, blank=True)
+
+    # 🔥 FIX HERE
+    department = models.TextField(null=True, blank=True)
+
     category = models.CharField(max_length=100, null=True, blank=True, db_index=True)
-    location = models.CharField(max_length=200, null=True, blank=True, db_index=True)
+
+    # 🔥 OPTIONAL (recommended)
+    location = models.CharField(max_length=300, null=True, blank=True, db_index=True)
+
     closing_date = models.DateField(null=True, blank=True, db_index=True)
+
     source = models.CharField(max_length=100, db_index=True)
-    link = models.URLField(max_length=500)
+
+    # 🔥 Increase for long URLs
+    link = models.URLField(max_length=1000)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
