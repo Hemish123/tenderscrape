@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Powered Tender Document Analysis — Upload tender PDFs and get structured, actionable summaries instantly.">
+    <title>Tender Analyzer — AI-Powered Document Analysis</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #818cf8;
+            --accent: #06b6d4;
+            --accent-dark: #0891b2;
+            --surface: #f0f2f5;
+            --surface-2: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --gradient-main: linear-gradient(135deg, #4f46e5 0%, #7c3aed 40%, #06b6d4 100%);
+            --gradient-card: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 14px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--surface);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ---- NAVBAR ---- */
+        .navbar-custom {
+            background: var(--gradient-main);
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
+        }
+        .navbar-brand {
+            font-weight: 900;
+            font-size: 1.6rem;
+            color: #fff !important;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar-brand i {
+            color: #fbbf24;
+            font-size: 1.4rem;
+        }
+        .nav-subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.82rem;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* ---- HERO / UPLOAD SECTION ---- */
+        .hero-section {
+            padding: 3rem 0 2rem;
+        }
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 600px;
+        }
+
+        /* ---- UPLOAD CARD ---- */
+        .upload-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            transition: box-shadow 0.3s ease;
+        }
+        .upload-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ---- DROP ZONE ---- */
+        .drop-zone {
+            border: 2px dashed #c7d2fe;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            transform: scale(1.01);
+        }
+        .drop-zone-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.2rem;
+            background: var(--gradient-main);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
+        }
+        .drop-zone h5 {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+        .drop-zone p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-bottom: 0;
+        }
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* ---- FILE INFO BAR ---- */
+        .file-info {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-top: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 12px;
+            animation: slideUp 0.3s ease;
+        }
+        .file-info.visible { display: flex; }
+        .file-info i { color: var(--success); font-size: 1.3rem; }
+        .file-info .file-name {
+            flex: 1;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        .file-info .file-size {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+        .file-info .remove-btn {
+            border: none;
+            background: none;
+            color: var(--danger);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .file-info .remove-btn:hover { background: #fee2e2; }
+
+        /* ---- UPLOAD BUTTON ---- */
+        .btn-upload {
+            background: var(--gradient-main);
+            border: none;
+            color: #fff;
+            border-radius: 12px;
+            padding: 0.85rem 2.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.25);
+        }
+        .btn-upload:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(79, 70, 229, 0.35);
+            color: #fff;
+        }
+        .btn-upload:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ---- PROCESSING OVERLAY ---- */
+        .processing-section {
+            display: none;
+            text-align: center;
+            padding: 3rem 1rem;
+            animation: fadeIn 0.4s ease;
+        }
+        .processing-section.visible { display: block; }
+        .processing-spinner {
+            width: 64px;
+            height: 64px;
+            border: 4px solid #e0e7ff;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        .processing-section h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .processing-section p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .processing-steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+        .step-item.active { color: var(--primary); font-weight: 600; }
+        .step-item.done { color: var(--success); }
+        .step-item i { font-size: 1rem; }
+
+        /* ---- ERROR ---- */
+        .error-section {
+            display: none;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .error-section.visible { display: block; }
+        .error-section .error-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: #fef2f2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--danger);
+        }
+        .error-section h5 { color: var(--danger); font-weight: 700; }
+        .error-section p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem; }
+        .btn-retry {
+            margin-top: 1rem;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            border-radius: 10px;
+            padding: 0.6rem 1.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-retry:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* ---- RESULT SECTION ---- */
+        .result-section {
+            display: none;
+            padding: 2rem 0 4rem;
+            animation: fadeIn 0.5s ease;
+        }
+        .result-section.visible { display: block; }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .result-header h3 {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+        .badge-success-custom {
+            background: #ecfdf5;
+            color: #059669;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* ---- SUMMARY CARDS ---- */
+        .summary-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .summary-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .summary-card-header {
+            padding: 1rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .summary-card-header .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .summary-card-header h6 {
+            font-weight: 700;
+            font-size: 0.92rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+        .summary-card-body {
+            padding: 1rem 1.2rem;
+        }
+        .summary-field {
+            display: flex;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            gap: 8px;
+        }
+        .summary-field:last-child { border-bottom: none; }
+        .summary-field-label {
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            min-width: 130px;
+            flex-shrink: 0;
+            padding-top: 2px;
+        }
+        .summary-field-value {
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        /* Card color variations */
+        .card-basic .card-icon { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+        .card-financial .card-icon { background: linear-gradient(135deg, #059669, #10b981); }
+        .card-timeline .card-icon { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+        .card-technical .card-icon { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+        .card-eligibility .card-icon { background: linear-gradient(135deg, #d97706, #f59e0b); }
+        .card-evaluation .card-icon { background: linear-gradient(135deg, #dc2626, #f87171); }
+        .card-contract .card-icon { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .card-contacts .card-icon { background: linear-gradient(135deg, #0d9488, #14b8a6); }
+        .card-risks .card-icon { background: linear-gradient(135deg, #e11d48, #fb7185); }
+        .card-summary .card-icon { background: linear-gradient(135deg, #4f46e5, #06b6d4); }
+
+        /* ---- NEW ANALYSIS BUTTON ---- */
+        .btn-new-analysis {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            border-radius: 12px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-new-analysis:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* ---- EXPORT PDF BUTTON ---- */
+        .btn-export {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border: none;
+            color: #fff;
+            border-radius: 12px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+        }
+        .btn-export:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.35);
+            color: #fff;
+        }
+        .btn-export:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ---- ANIMATIONS ---- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 1.6rem; }
+            .upload-card { padding: 1.5rem; }
+            .drop-zone { padding: 2rem 1rem; }
+            .summary-field { flex-direction: column; gap: 2px; }
+            .summary-field-label { min-width: auto; }
+        }
+
+        /* ---- FOOTER ---- */
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div>
+                <a class="navbar-brand" href="/">
+                    <i class="bi bi-file-earmark-richtext"></i>
+                    Tender Analyzer
+                </a>
+                <div class="nav-subtitle">AI-Powered Tender Document Analysis</div>
+            </div>
+            <div class="d-none d-md-flex gap-3 align-items-center">
+                <a href="/admin/" class="btn btn-sm" style="border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.85); border-radius: 8px;">
+                    <i class="bi bi-gear me-1"></i> Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO + UPLOAD -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="text-center mb-4">
+                        <h1 class="hero-title">Analyze Tender Documents Instantly</h1>
+                        <p class="hero-subtitle mx-auto">Upload any tender or RFP document (PDF) and get a detailed, AI-generated structured summary with key insights for decision-making.</p>
+                    </div>
+
+                    <!-- UPLOAD CARD -->
+                    <div class="upload-card" id="uploadCard">
+                        <!-- Drop Zone -->
+                        <div class="drop-zone" id="dropZone">
+                            <input type="file" id="fileInput" accept=".pdf,application/pdf">
+                            <div class="drop-zone-icon">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                            </div>
+                            <h5>Drop your tender PDF here</h5>
+                            <p>or click to browse files &bull; PDF only &bull; Max 20 MB</p>
+                        </div>
+
+                        <!-- File Info -->
+                        <div class="file-info" id="fileInfo">
+                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                            <span class="file-name" id="fileName">—</span>
+                            <span class="file-size" id="fileSize">—</span>
+                            <button class="remove-btn" id="removeFileBtn" title="Remove file">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Upload Button -->
+                        <div class="text-center">
+                            <button class="btn btn-upload" id="uploadBtn" disabled>
+                                <i class="bi bi-cpu me-2"></i>Analyze Document
+                            </button>
+                        </div>
+
+                        <!-- Processing -->
+                        <div class="processing-section" id="processingSection">
+                            <div class="processing-spinner"></div>
+                            <h5>Analyzing your document...</h5>
+                            <p>This may take 15–30 seconds depending on document length.</p>
+                            <div class="processing-steps">
+                                <div class="step-item active" id="step1">
+                                    <i class="bi bi-upload"></i> Uploading
+                                </div>
+                                <div class="step-item" id="step2">
+                                    <i class="bi bi-file-text"></i> Extracting Text
+                                </div>
+                                <div class="step-item" id="step3">
+                                    <i class="bi bi-robot"></i> AI Analysis
+                                </div>
+                                <div class="step-item" id="step4">
+                                    <i class="bi bi-check-circle"></i> Done
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error -->
+                        <div class="error-section" id="errorSection">
+                            <div class="error-icon">
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </div>
+                            <h5>Analysis Failed</h5>
+                            <p id="errorMessage">An error occurred while processing the document.</p>
+                            <button class="btn btn-retry" onclick="resetUpload()">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESULT SECTION -->
+    <section class="result-section" id="resultSection">
+        <div class="container">
+            <div class="result-header">
+                <div>
+                    <h3><i class="bi bi-clipboard-data me-2" style="color: var(--primary);"></i>Analysis Results</h3>
+                    <span class="badge-success-custom">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Analysis Complete — Document ID: <span id="resultDocId">—</span>
+                    </span>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-export" id="exportPdfBtn" onclick="exportToPDF()">
+                        <i class="bi bi-file-earmark-arrow-down me-1"></i> Export PDF
+                    </button>
+                    <button class="btn btn-new-analysis" onclick="resetUpload()">
+                        <i class="bi bi-plus-lg me-1"></i> New Analysis
+                    </button>
+                </div>
+            </div>
+
+            <div class="row g-4" id="summaryCards">
+                <!-- Cards populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="container">
+            <p>&copy; 2026 JMS. All rights reserved &bull; Powered by JMS Tech AI Solutions</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- html2pdf.js for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        // ---- Elements ----
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const removeFileBtn = document.getElementById('removeFileBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const processingSection = document.getElementById('processingSection');
+        const errorSection = document.getElementById('errorSection');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultSection = document.getElementById('resultSection');
+        const summaryCards = document.getElementById('summaryCards');
+        const uploadCard = document.getElementById('uploadCard');
+
+        let selectedFile = null;
+        let currentSummaryData = null;
+
+        // ---- Card Config ----
+        const SECTION_CONFIG = {
+            basic_information: {
+                title: 'Basic Information',
+                icon: 'bi-info-circle',
+                colorClass: 'card-basic',
+            },
+            financial_details: {
+                title: 'Financial Details',
+                icon: 'bi-currency-dollar',
+                colorClass: 'card-financial',
+            },
+            timeline: {
+                title: 'Timeline',
+                icon: 'bi-calendar-event',
+                colorClass: 'card-timeline',
+            },
+            technical_requirements: {
+                title: 'Technical Requirements',
+                icon: 'bi-gear',
+                colorClass: 'card-technical',
+            },
+            eligibility_criteria: {
+                title: 'Eligibility Criteria',
+                icon: 'bi-person-check',
+                colorClass: 'card-eligibility',
+            },
+            evaluation_criteria: {
+                title: 'Evaluation Criteria',
+                icon: 'bi-bar-chart-line',
+                colorClass: 'card-evaluation',
+            },
+            contract_details: {
+                title: 'Contract Details',
+                icon: 'bi-file-earmark-text',
+                colorClass: 'card-contract',
+            },
+            important_contacts: {
+                title: 'Important Contacts',
+                icon: 'bi-telephone',
+                colorClass: 'card-contacts',
+            },
+            risk_insights: {
+                title: 'Risk Insights',
+                icon: 'bi-shield-exclamation',
+                colorClass: 'card-risks',
+            },
+            summary: {
+                title: 'Summary & Highlights',
+                icon: 'bi-lightbulb',
+                colorClass: 'card-summary',
+            },
+        };
+
+        // ---- Drag & Drop ----
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        // ---- File Input ----
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                showError('Please upload a PDF file.');
+                return;
+            }
+            if (file.size > 20 * 1024 * 1024) {
+                showError('File too large. Maximum size is 20 MB.');
+                return;
+            }
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.add('visible');
+            uploadBtn.disabled = false;
+            errorSection.classList.remove('visible');
+        }
+
+        removeFileBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.classList.remove('visible');
+            uploadBtn.disabled = true;
+        });
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // ---- Upload ----
+        uploadBtn.addEventListener('click', uploadDocument);
+
+        async function uploadDocument() {
+            if (!selectedFile) return;
+
+            // Show processing state
+            dropZone.style.display = 'none';
+            fileInfo.classList.remove('visible');
+            uploadBtn.style.display = 'none';
+            errorSection.classList.remove('visible');
+            processingSection.classList.add('visible');
+
+            // Animate steps
+            setStep(1);
+            await sleep(500);
+            setStep(2);
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                await sleep(400);
+                setStep(3);
+
+                const csrfToken = getCookie('csrftoken');
+                const response = await fetch('/api/upload-tender/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    const errMsg = result.error
+                        ? (typeof result.error === 'string' ? result.error : JSON.stringify(result.error))
+                        : 'An unknown error occurred.';
+                    throw new Error(errMsg);
+                }
+
+                setStep(4);
+                await sleep(600);
+
+                // Hide processing, show results
+                processingSection.classList.remove('visible');
+                displayResults(result.data);
+
+            } catch (err) {
+                processingSection.classList.remove('visible');
+                showError(err.message);
+            }
+        }
+
+        function setStep(activeStep) {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('step' + i);
+                el.classList.remove('active', 'done');
+                if (i < activeStep) el.classList.add('done');
+                else if (i === activeStep) el.classList.add('active');
+            }
+        }
+
+        function showError(msg) {
+            dropZone.style.display = '';
+            uploadBtn.style.display = '';
+            processingSection.classList.remove('visible');
+            errorMessage.textContent = msg;
+            errorSection.classList.add('visible');
+        }
+
+        function resetUpload() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.classList.remove('visible');
+            uploadBtn.disabled = true;
+            uploadBtn.style.display = '';
+            dropZone.style.display = '';
+            processingSection.classList.remove('visible');
+            errorSection.classList.remove('visible');
+            resultSection.classList.remove('visible');
+            summaryCards.innerHTML = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ---- Display Results ----
+        function displayResults(data) {
+            currentSummaryData = data;  // Store for PDF export
+            document.getElementById('resultDocId').textContent = data.id;
+
+            summaryCards.innerHTML = '';
+
+            const summaryJson = data.summary_json;
+            if (!summaryJson) {
+                summaryCards.innerHTML = '<div class="col-12"><p class="text-muted text-center py-4">No summary data available.</p></div>';
+                resultSection.classList.add('visible');
+                return;
+            }
+
+            // Build cards for each section
+            const sectionOrder = [
+                'basic_information', 'financial_details', 'timeline',
+                'technical_requirements', 'eligibility_criteria', 'evaluation_criteria',
+                'contract_details', 'important_contacts', 'risk_insights', 'summary'
+            ];
+
+            for (const key of sectionOrder) {
+                const sectionData = summaryJson[key];
+                if (!sectionData) continue;
+
+                const config = SECTION_CONFIG[key] || {
+                    title: formatLabel(key),
+                    icon: 'bi-card-text',
+                    colorClass: 'card-basic',
+                };
+
+                // Determine column width: summary gets full width
+                const colClass = key === 'summary' ? 'col-12' : 'col-lg-6';
+
+                const card = document.createElement('div');
+                card.className = colClass;
+                card.style.animation = `fadeIn 0.4s ease ${sectionOrder.indexOf(key) * 0.05}s both`;
+
+                let fieldsHtml = '';
+                if (typeof sectionData === 'object' && !Array.isArray(sectionData)) {
+                    for (const [fieldKey, fieldValue] of Object.entries(sectionData)) {
+                        const displayValue = fieldValue === null || fieldValue === undefined || fieldValue === ''
+                            ? '<span style="color: var(--text-muted); font-style: italic;">Not found</span>'
+                            : escapeHtml(String(fieldValue));
+                        fieldsHtml += `
+                            <div class="summary-field">
+                                <div class="summary-field-label">${formatLabel(fieldKey)}</div>
+                                <div class="summary-field-value">${displayValue}</div>
+                            </div>`;
+                    }
+                } else {
+                    fieldsHtml = `<div class="summary-field-value">${escapeHtml(String(sectionData))}</div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="summary-card ${config.colorClass}">
+                        <div class="summary-card-header">
+                            <div class="card-icon"><i class="bi ${config.icon}"></i></div>
+                            <h6>${config.title}</h6>
+                        </div>
+                        <div class="summary-card-body">${fieldsHtml}</div>
+                    </div>`;
+
+                summaryCards.appendChild(card);
+            }
+
+            // Also render any extra sections not in the predefined list
+            for (const [key, sectionData] of Object.entries(summaryJson)) {
+                if (sectionOrder.includes(key)) continue;
+                if (!sectionData) continue;
+
+                const card = document.createElement('div');
+                card.className = 'col-lg-6';
+
+                let fieldsHtml = '';
+                if (typeof sectionData === 'object' && !Array.isArray(sectionData)) {
+                    for (const [fieldKey, fieldValue] of Object.entries(sectionData)) {
+                        const displayValue = fieldValue === null || fieldValue === undefined || fieldValue === ''
+                            ? '<span style="color: var(--text-muted); font-style: italic;">Not found</span>'
+                            : escapeHtml(String(fieldValue));
+                        fieldsHtml += `
+                            <div class="summary-field">
+                                <div class="summary-field-label">${formatLabel(fieldKey)}</div>
+                                <div class="summary-field-value">${displayValue}</div>
+                            </div>`;
+                    }
+                } else {
+                    fieldsHtml = `<div class="summary-field-value">${escapeHtml(String(sectionData))}</div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="summary-card card-basic">
+                        <div class="summary-card-header">
+                            <div class="card-icon"><i class="bi bi-card-text"></i></div>
+                            <h6>${formatLabel(key)}</h6>
+                        </div>
+                        <div class="summary-card-body">${fieldsHtml}</div>
+                    </div>`;
+
+                summaryCards.appendChild(card);
+            }
+
+            resultSection.classList.add('visible');
+            // Scroll to results
+            setTimeout(() => {
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 200);
+        }
+
+        // ---- Utilities ----
+        function formatLabel(key) {
+            return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let c of cookies) {
+                c = c.trim();
+                if (c.startsWith(name + '=')) {
+                    return decodeURIComponent(c.substring(name.length + 1));
+                }
+            }
+            return null;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // ---- Export to PDF ----
+
+        function flattenValue(val) {
+            if (val === null || val === undefined || val === '') return null;
+            if (typeof val === 'string') return val;
+            if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+            if (Array.isArray(val)) return val.map(function(v) { return flattenValue(v); }).filter(Boolean).join(', ');
+            if (typeof val === 'object') {
+                return Object.entries(val)
+                    .map(function(entry) { var fv = flattenValue(entry[1]); return fv ? formatLabel(entry[0]) + ': ' + fv : null; })
+                    .filter(Boolean).join(' | ');
+            }
+            return String(val);
+        }
+
+        function exportToPDF() {
+            if (!currentSummaryData) return;
+
+            var btn = document.getElementById('exportPdfBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generating...';
+
+            var summaryJson = currentSummaryData.summary_json;
+            var docId = currentSummaryData.id;
+            var now = new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            var sectionOrder = [
+                'basic_information', 'financial_details', 'timeline',
+                'technical_requirements', 'eligibility_criteria', 'evaluation_criteria',
+                'contract_details', 'important_contacts', 'risk_insights', 'summary'
+            ];
+
+            var sectionTitles = {
+                basic_information: 'Basic Information',
+                financial_details: 'Financial Details',
+                timeline: 'Timeline',
+                technical_requirements: 'Technical Requirements',
+                eligibility_criteria: 'Eligibility Criteria',
+                evaluation_criteria: 'Evaluation Criteria',
+                contract_details: 'Contract Details',
+                important_contacts: 'Important Contacts',
+                risk_insights: 'Risk Insights',
+                summary: 'Summary & Highlights'
+            };
+
+            var sectionColors = {
+                basic_information: '#4f46e5',
+                financial_details: '#059669',
+                timeline: '#0891b2',
+                technical_requirements: '#7c3aed',
+                eligibility_criteria: '#d97706',
+                evaluation_criteria: '#dc2626',
+                contract_details: '#2563eb',
+                important_contacts: '#0d9488',
+                risk_insights: '#e11d48',
+                summary: '#4f46e5'
+            };
+
+            // Build the PDF HTML — same as first version
+            var html = '<div style="font-family: Helvetica Neue, Arial, sans-serif; color: #1e293b; padding: 10px;">' +
+                '<div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 3px solid #4f46e5;">' +
+                '<h1 style="font-size: 22px; font-weight: 800; color: #4f46e5; margin: 0 0 4px;">Tender Document Analysis Report</h1>' +
+                '<p style="font-size: 11px; color: #94a3b8; margin: 0;">Document ID: ' + docId + ' &bull; Generated: ' + now + ' &bull; Powered by JMS</p>' +
+                '</div>';
+
+            // Render predefined sections
+            for (var i = 0; i < sectionOrder.length; i++) {
+                var key = sectionOrder[i];
+                var sectionData = summaryJson[key];
+                if (!sectionData) continue;
+                var title = sectionTitles[key] || formatLabel(key);
+                var color = sectionColors[key] || '#4f46e5';
+                html += buildPdfSection(title, color, sectionData);
+            }
+
+            // Render any extra sections not in predefined order
+            var extraKeys = Object.keys(summaryJson);
+            for (var j = 0; j < extraKeys.length; j++) {
+                if (sectionOrder.indexOf(extraKeys[j]) === -1 && summaryJson[extraKeys[j]]) {
+                    html += buildPdfSection(formatLabel(extraKeys[j]), '#4f46e5', summaryJson[extraKeys[j]]);
+                }
+            }
+
+            html += '</div>';
+
+            // Create container in normal document flow so html2canvas can capture full height
+            var container = document.createElement('div');
+            container.id = 'pdf-render-container';
+            container.style.cssText = 'position:absolute; left:-2000px; top:0; width:800px; z-index:-1; pointer-events:none;';
+            container.innerHTML = html;
+
+            // Temporarily scroll to top so html2canvas doesn't clip
+            var savedScrollY = window.scrollY;
+            window.scrollTo(0, 0);
+            document.body.appendChild(container);
+
+            // Delay to allow full DOM paint
+            setTimeout(function() {
+                var element = container.firstElementChild;
+                html2pdf().set({
+                    margin: [10, 12, 10, 12],
+                    filename: 'tender_analysis_' + docId + '.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        letterRendering: true,
+                        x: 0,
+                        y: 0,
+                        scrollX: 0,
+                        scrollY: 0,
+                        windowWidth: 800
+                    },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                }).from(element).save().then(function() {
+                    document.body.removeChild(container);
+                    window.scrollTo(0, savedScrollY);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-file-earmark-arrow-down me-1"></i> Export PDF';
+                }).catch(function(err) {
+                    console.error('PDF export failed:', err);
+                    document.body.removeChild(container);
+                    window.scrollTo(0, savedScrollY);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-file-earmark-arrow-down me-1"></i> Export PDF';
+                    alert('PDF export failed. Please try again.');
+                });
+            }, 500);
+        }
+
+        function buildPdfSection(title, color, sectionData) {
+            var html = '<div style="margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; page-break-inside: avoid;">' +
+                '<div style="background: ' + color + '; color: #fff; padding: 10px 16px; font-size: 13px; font-weight: 700;">' +
+                escapeHtml(title) +
+                '</div>' +
+                '<div style="padding: 12px 16px;">';
+
+            if (typeof sectionData === 'object' && !Array.isArray(sectionData)) {
+                html += '<table style="width: 100%; border-collapse: collapse; font-size: 11px;">';
+                var entries = Object.entries(sectionData);
+                for (var i = 0; i < entries.length; i++) {
+                    var fieldKey = entries[i][0];
+                    var fieldValue = entries[i][1];
+                    var flat = flattenValue(fieldValue);
+                    var val = flat
+                        ? escapeHtml(flat)
+                        : '<span style="color: #94a3b8; font-style: italic;">Not found</span>';
+                    html += '<tr style="border-bottom: 1px solid #f1f5f9;">' +
+                        '<td style="padding: 6px 8px 6px 0; font-weight: 600; color: #64748b; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; width: 35%; vertical-align: top;">' + formatLabel(fieldKey) + '</td>' +
+                        '<td style="padding: 6px 0; color: #1e293b; line-height: 1.5;">' + val + '</td>' +
+                        '</tr>';
+                }
+                html += '</table>';
+            } else {
+                var flat = flattenValue(sectionData);
+                html += '<p style="font-size: 11px; color: #1e293b; line-height: 1.5; margin: 0;">' + (flat ? escapeHtml(flat) : 'N/A') + '</p>';
+            }
+
+            html += '</div></div>';
+            return html;
+        }
+    </script>
+</body>
+</html>
