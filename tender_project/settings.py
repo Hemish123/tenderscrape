@@ -22,11 +22,13 @@ ALLOWED_HOSTS = [
     "tenderscrap-hcfvefa5h0dcgnh2.canadacentral-01.azurewebsites.net",
     "localhost",
     "127.0.0.1",
-    "b869-2405-201-2005-1965-d02-4bbc-4c91-b696.ngrok-free.app"
+    "b869-2405-201-2005-1965-d02-4bbc-4c91-b696.ngrok-free.app",
+    "tender.jmstech.co"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://tenderscrap-hcfvefa5h0dcgnh2.canadacentral-01.azurewebsites.net"
+    "https://tenderscrap-hcfvefa5h0dcgnh2.canadacentral-01.azurewebsites.net",
+    "https://tender.jmstech.co/"
 ]
 
 
