@@ -28,8 +28,14 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://tenderscrap-hcfvefa5h0dcgnh2.canadacentral-01.azurewebsites.net",
-    "https://tender.jmstech.co/"
+    "https://tender.jmstech.co",
 ]
+
+# Force secure cookies / proxy SSL detection for Azure App Service
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+
 
 
 # ---------------------------------------------------------------------------
