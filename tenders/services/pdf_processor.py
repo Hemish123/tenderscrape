@@ -2,8 +2,10 @@
 """
 Extracts text from uploaded tender PDF files using pdfplumber.
 Handles large PDFs, text cleaning, and chunking.
+Works with both local file paths and Django FieldFile objects (cloud storage).
 """
 
+import io
 import logging
 import re
 
@@ -15,12 +17,13 @@ logger = logging.getLogger(__name__)
 MAX_TEXT_LENGTH = 60_000
 
 
-def extract_text_from_file(file_path: str) -> str:
+def extract_text_from_file(file_source) -> str:
     """
-    Extract and clean text from a local PDF file.
+    Extract and clean text from a PDF.
 
     Args:
-        file_path: Absolute path to the PDF file on disk.
+        file_source: Either an absolute file path (str) or a Django FieldFile /
+                     file-like object. Supports both local disk and cloud storage.
 
     Returns:
         Cleaned text string ready for AI summarization.
@@ -32,9 +35,10 @@ def extract_text_from_file(file_path: str) -> str:
     text_parts = []
 
     try:
-        with pdfplumber.open(file_path) as pdf:
+        pdf_input = _resolve_pdf_input(file_source)
+        with pdfplumber.open(pdf_input) as pdf:
             total_pages = len(pdf.pages)
-            logger.info("PDF has %d pages: %s", total_pages, file_path)
+            logger.info("PDF has %d pages", total_pages)
 
             for i, page in enumerate(pdf.pages):
                 try:
@@ -45,6 +49,8 @@ def extract_text_from_file(file_path: str) -> str:
                     logger.warning("Failed to extract text from page %d: %s", i + 1, e)
                     continue
 
+    except (ValueError, RuntimeError):
+        raise
     except Exception as e:
         raise RuntimeError(f"Failed to parse PDF: {e}")
 
@@ -66,6 +72,28 @@ def extract_text_from_file(file_path: str) -> str:
 
     logger.info("Extracted %d characters of text", len(cleaned))
     return cleaned
+
+
+def _resolve_pdf_input(file_source):
+    """
+    Convert various file source types into something pdfplumber.open() accepts.
+
+    - str → treat as file path (local dev)
+    - Django FieldFile / file-like → read bytes into BytesIO
+    """
+    # If it's already a plain path string, return as-is
+    if isinstance(file_source, str):
+        return file_source
+
+    # Django FieldFile or any file-like object
+    try:
+        file_source.seek(0)
+        data = file_source.read()
+        return io.BytesIO(data)
+    except Exception as e:
+        raise RuntimeError(
+            f"Cannot read PDF from file source ({type(file_source).__name__}): {e}"
+        )
 
 
 def _clean_text(text: str) -> str:

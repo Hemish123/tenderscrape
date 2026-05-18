@@ -769,7 +769,18 @@
                     headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
                 });
 
-                const result = await response.json();
+                // Safely parse response — handle cases where server returns HTML instead of JSON
+                const responseText = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseErr) {
+                    console.error('Non-JSON response from server:', responseText.substring(0, 500));
+                    throw new Error(
+                        `Server returned an invalid response (HTTP ${response.status}). ` +
+                        'This usually means a server-side error. Please try again or contact support.'
+                    );
+                }
 
                 if (!response.ok) {
                     const errMsg = result.error

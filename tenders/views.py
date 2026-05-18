@@ -33,6 +33,17 @@ class UploadTenderView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
+        try:
+            return self._handle_upload(request)
+        except Exception as e:
+            # Catch-all: ALWAYS return JSON, never let Django render an HTML error page
+            logger.exception("Unhandled error in UploadTenderView: %s", e)
+            return Response(
+                {'error': f'Internal server error: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def _handle_upload(self, request):
         # 1. Validate uploaded file
         serializer = TenderUploadSerializer(data=request.data)
         if not serializer.is_valid():
@@ -47,9 +58,15 @@ class UploadTenderView(APIView):
         doc = TenderDocument.objects.create(file=uploaded_file)
 
         # 3. Extract text from the saved PDF
+        #    Try .path first (local dev), fall back to file object (cloud storage)
         try:
             from .services.pdf_processor import extract_text_from_file
-            extracted_text = extract_text_from_file(doc.file.path)
+            try:
+                file_source = doc.file.path
+            except NotImplementedError:
+                # Cloud storage backends (Azure, S3) don't support .path
+                file_source = doc.file
+            extracted_text = extract_text_from_file(file_source)
         except (ValueError, RuntimeError) as e:
             logger.error("PDF extraction failed for document %d: %s", doc.pk, e)
             doc.delete()
