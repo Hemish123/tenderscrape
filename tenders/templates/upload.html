@@ -629,6 +629,7 @@
 
         let selectedFile = null;
         let currentSummaryData = null;
+        let pollingTimer = null;
 
         // ---- Card Config ----
         const SECTION_CONFIG = {
@@ -737,7 +738,7 @@
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
-        // ---- Upload ----
+        // ---- Upload (Async with Polling) ----
         uploadBtn.addEventListener('click', uploadDocument);
 
         async function uploadDocument() {
@@ -750,18 +751,12 @@
             errorSection.classList.remove('visible');
             processingSection.classList.add('visible');
 
-            // Animate steps
             setStep(1);
-            await sleep(500);
-            setStep(2);
 
             const formData = new FormData();
             formData.append('file', selectedFile);
 
             try {
-                await sleep(400);
-                setStep(3);
-
                 const csrfToken = getCookie('csrftoken');
                 const response = await fetch('/api/upload-tender/', {
                     method: 'POST',
@@ -769,7 +764,7 @@
                     headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
                 });
 
-                // Safely parse response — handle cases where server returns HTML instead of JSON
+                // Safely parse response
                 const responseText = await response.text();
                 let result;
                 try {
@@ -778,28 +773,67 @@
                     console.error('Non-JSON response from server:', responseText.substring(0, 500));
                     throw new Error(
                         `Server returned an invalid response (HTTP ${response.status}). ` +
-                        'This usually means a server-side error. Please try again or contact support.'
+                        'Please try again or contact support.'
                     );
                 }
 
                 if (!response.ok) {
                     const errMsg = result.error
                         ? (typeof result.error === 'string' ? result.error : JSON.stringify(result.error))
-                        : 'An unknown error occurred.';
+                        : 'Upload failed.';
                     throw new Error(errMsg);
                 }
 
-                setStep(4);
-                await sleep(600);
-
-                // Hide processing, show results
-                processingSection.classList.remove('visible');
-                displayResults(result.data);
+                // Upload accepted — start polling for status
+                const docId = result.data.id;
+                setStep(2);
+                startPolling(docId);
 
             } catch (err) {
                 processingSection.classList.remove('visible');
                 showError(err.message);
             }
+        }
+
+        // ---- Poll for processing status ----
+        function startPolling(docId) {
+            // Poll every 3 seconds
+            pollingTimer = setInterval(async () => {
+                try {
+                    const resp = await fetch(`/api/tender/${docId}/status/`);
+                    const statusData = await resp.json();
+
+                    // Update processing steps based on status
+                    switch (statusData.status) {
+                        case 'pending':
+                            setStep(1);
+                            break;
+                        case 'extracting':
+                            setStep(2);
+                            break;
+                        case 'analyzing':
+                            setStep(3);
+                            break;
+                        case 'completed':
+                            clearInterval(pollingTimer);
+                            pollingTimer = null;
+                            setStep(4);
+                            await sleep(600);
+                            processingSection.classList.remove('visible');
+                            displayResults(statusData.data);
+                            return;
+                        case 'failed':
+                            clearInterval(pollingTimer);
+                            pollingTimer = null;
+                            processingSection.classList.remove('visible');
+                            showError(statusData.error || 'Processing failed. Please try again.');
+                            return;
+                    }
+                } catch (pollErr) {
+                    console.error('Polling error:', pollErr);
+                    // Don't stop polling on transient network errors
+                }
+            }, 3000);
         }
 
         function setStep(activeStep) {
@@ -820,6 +854,11 @@
         }
 
         function resetUpload() {
+            // Stop any active polling
+            if (pollingTimer) {
+                clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
             selectedFile = null;
             fileInput.value = '';
             fileInfo.classList.remove('visible');

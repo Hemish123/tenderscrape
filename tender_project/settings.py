@@ -85,15 +85,9 @@ WSGI_APPLICATION = 'tender_project.wsgi.application'
 # Database
 # ---------------------------------------------------------------------------
 # SQLite for development; switch to PostgreSQL for production via env vars
-if DEBUG:
-    DATABASES = {'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-else:
-    CONNECTION_STRING = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
-    conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in CONNECTION_STRING.split(' ')}
+_pg_conn_string = os.environ.get('AZURE_POSTGRESQL_CONNECTIONSTRING', '')
+if _pg_conn_string:
+    conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in _pg_conn_string.split(' ')}
 
     DATABASES = {
         'default': {
@@ -104,6 +98,12 @@ else:
             'PASSWORD': conn_str_params['password'],
         }
     }
+else:
+    DATABASES = {'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 
@@ -173,17 +173,14 @@ REST_FRAMEWORK = {
 # ---------------------------------------------------------------------------
 # Logging Configuration
 # ---------------------------------------------------------------------------
-if DEBUG:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
+_log_file = '/home/site/wwwroot/django_errors.log' if os.path.isdir('/home/site/wwwroot') else str(BASE_DIR / 'scraper.log')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
             'format': '{levelname} {asctime} [{name}] {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
             'style': '{',
         },
     },
@@ -194,7 +191,7 @@ if DEBUG:
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'scraper.log',
+            'filename': _log_file,
             'formatter': 'verbose',
         },
     },
@@ -204,42 +201,18 @@ if DEBUG:
             'level': 'INFO',
             'propagate': False,
         },
+        'tenders': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'INFO' if DEBUG else 'ERROR',
             'propagate': True,
         },
     },
 }
-else:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-
-        'formatters': {
-            'verbose': {
-                'format': '{levelname} {asctime} {module} {message}',
-                'style': '{',
-            },
-        },
-
-        'handlers': {
-            'file': {
-                'level': 'ERROR',
-                'class': 'logging.FileHandler',
-                'filename': '/home/site/wwwroot/django_errors.log',
-                'formatter': 'verbose',
-            },
-        },
-
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'ERROR',
-                'propagate': False,
-            },
-        },
-    }
 
 
 # ---------------------------------------------------------------------------

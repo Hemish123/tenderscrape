@@ -42,7 +42,7 @@ class TenderDocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TenderDocument
-        fields = ['id', 'file_url', 'summary_json', 'created_at']
+        fields = ['id', 'file_url', 'summary_json', 'status', 'created_at']
 
     def get_file_url(self, obj):
         request = self.context.get('request')
