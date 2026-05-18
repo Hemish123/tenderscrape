@@ -144,6 +144,8 @@ def _get_client() -> AzureOpenAI:
         api_version=getattr(
             settings, 'AZURE_OPENAI_API_VERSION', '2024-05-01-preview'
         ),
+        timeout=180.0,         # 3-minute hard timeout per request
+        max_retries=1,         # Retry once on transient failures
     )
 
 
@@ -214,6 +216,12 @@ def generate_summary(document_text: str) -> dict:
 
     except ValueError:
         raise
+    except TimeoutError:
+        logger.error("Azure OpenAI API timed out after 180 seconds")
+        raise RuntimeError(
+            "AI analysis timed out. The document may be too large. "
+            "Please try a shorter document or try again later."
+        )
     except Exception as e:
         logger.error("Azure OpenAI API error: %s", e)
         raise RuntimeError(f"AI summarization failed: {e}")

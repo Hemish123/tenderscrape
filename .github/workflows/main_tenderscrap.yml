@@ -64,3 +64,4 @@ jobs:
           app-name: 'tenderscrap'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_559585C680884ABAAAC6EBF0B8CB951D }}
+          startup-command: 'startup.sh'
